@@ -1,0 +1,3 @@
+-e git+https://github.com/CristianCantoro/compressed_stream.git@master#egg=compressed_stream
+redis==3.5.3
+rejson==0.5.4

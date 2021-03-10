@@ -1,0 +1,16 @@
+# Loading initial data into a Redis Docker container
+# https://stackoverflow.com/a/33006167/2377454
+version: '3.4'
+
+services:
+  cache:
+    image:  redislabs/rejson:latest
+    restart: always
+
+  cli:
+    image: redis
+    links:
+      - cache:cache
+    depends_on:
+      - cache
+    restart: always
