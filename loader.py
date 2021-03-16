@@ -46,14 +46,11 @@ if __name__ == '__main__':
     for json_file in json_files:
         for trip in json_file:
             offer = transform_trip(trip)
+
             if i % NPRINT == 0:
                 print('insert #{} (tripId: {})'.format(i, trip['legId']))
+
             redis.jsonset(trip['legId'], rj.Path.rootPath(), offer[trip['legId']])
             i = i + 1
-
-
-    # getting a trip backs
-    #redis.jsonget('#24:28250', rj.Path.rootPath())
-    # import ipdb; ipdb.set_trace()
 
     exit(0)
