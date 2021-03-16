@@ -15,6 +15,9 @@ docker run --rm --name cache -p 6379:6379 redislabs/rejson:latest
 
 Load the data into redis:
 
+**Note: for Windows unzip the files first because the decompression
+does not work.**
+
 ```bash
 python3 loader.py data/final1.json.gz data/final2.json.gz
 ```
