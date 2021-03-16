@@ -11,6 +11,7 @@ import rejson as rj
 from typing import IO, Union
 
 import compressed_stream as cs
+from cache_format import transform_trip
 
 
 NPRINT = 1000
@@ -44,13 +45,15 @@ if __name__ == '__main__':
     i = 1
     for json_file in json_files:
         for trip in json_file:
+            offer = transform_trip(trip)
             if i % NPRINT == 0:
-                print('insert #{} (tripId: {})'.format(i, trip['tripId']))
-            redis.jsonset(trip['tripId'], rj.Path.rootPath(), trip)
+                print('insert #{} (tripId: {})'.format(i, trip['legId']))
+            redis.jsonset(trip['legId'], rj.Path.rootPath(), offer[trip['legId']])
             i = i + 1
 
+
     # getting a trip backs
-    # redis.jsonget('#32:10121', rj.Path.rootPath())
+    #redis.jsonget('#24:28250', rj.Path.rootPath())
     # import ipdb; ipdb.set_trace()
 
     exit(0)
