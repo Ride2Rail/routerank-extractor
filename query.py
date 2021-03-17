@@ -12,7 +12,7 @@ if __name__ == '__main__':
     redis = rj.Client(host='localhost', port=6379, decode_responses=True)
 
     # getting a trip back
-    example = redis.jsonget('#25:10379', rj.Path.rootPath())
+    example = redis.jsonget('#23:17780:offers', rj.Path.rootPath())
 
     # import ipdb; ipdb.set_trace()
 
