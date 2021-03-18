@@ -47,11 +47,12 @@ if __name__ == '__main__':
             if len(trip['alternatives']) != 0:
                 offer = transform_trip(trip)
 
-                if i % NPRINT == 0:
-                    print('insert #{} (tripId: {})'.format(i, trip['legId']))
                 # request-level information
                 request_id = trip['legId']
                 redis.jsonset(request_id + ':offers', rj.Path.rootPath(), offer[request_id]['offers'])
+
+                if i % NPRINT == 0:
+                    print('insert #{} (request_id: {})'.format(i, request_id))
 
                 # offer-level information
                 for alternative in trip['alternatives']:
