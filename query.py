@@ -22,7 +22,9 @@ if __name__ == '__main__':
     # getting a trip back
     for reqid in args.request_ids:
         print("Request id: {}".format(reqid))
-        example = redis.jsonget('#23:17780:offers', rj.Path.rootPath())
+        example = redis.jsonget('{}:offers'.format(reqid),
+                                rj.Path.rootPath()
+                                )
         pprint(example)
 
     exit(0)
