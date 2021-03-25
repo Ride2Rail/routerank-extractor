@@ -10,7 +10,7 @@
 Start redis in a docker container:
 
 ```bash
-docker run --rm --name cache -p 6379:6379 redislabs/rejson:latest
+docker run --rm --name cache -p 6379:6379 redis:latest
 ```
 
 Load the data into redis:
@@ -33,7 +33,7 @@ docker run -it \
 ## References
 
 * [RedisJSON: A Redis JSON Store][redislabs]
-* [A presentation by Itamar Haber, Redis Labs][[itamar_haber]]
+* [A presentation by Itamar Haber, Redis Labs][itamar_haber]
 
 [redislabs]: https://redislabs.com/blog/redis-as-a-json-store/
 [itamar_haber]: https://www.youtube.com/watch?v=NLRbq2FtcIk
