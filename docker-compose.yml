@@ -4,13 +4,22 @@ version: '3.4'
 
 services:
   cache:
-    image:  redislabs/rejson:latest
+    image:  redis:latest
     restart: always
+    networks:
+      - cache-network
 
-  cli:
-    image: redis
+  loader:
+    build:
+      context: .
+      dockerfile: Dockerfile.loader
     links:
       - cache:cache
     depends_on:
       - cache
-    restart: always
+    networks:
+      - cache-network
+    command: ["python3", "loader.py", "-H", "cache", "final1.json.gz", "final2.json.gz"]
+
+networks:
+  cache-network:

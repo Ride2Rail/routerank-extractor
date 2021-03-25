@@ -1,0 +1,16 @@
+FROM python:3.8
+
+WORKDIR /build
+
+RUN pip3 install --no-cache-dir --upgrade pip
+
+COPY requirements.txt requirements.txt
+
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+COPY loader /build/loader/
+COPY loader.py /build/
+
+COPY data/final1.json.gz data/final2.json.gz /build/
+
+CMD ["python3", "loader.py", "final1.json.gz", "final2.json.gz"]
