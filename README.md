@@ -5,7 +5,7 @@
 1. Create a virtualenv
 2. Install the requirements: `pip3 install -r requirements.txt`
 
-## Usage
+## Usage (standalone)
 
 Start redis in a docker container:
 
@@ -22,12 +22,48 @@ does not work.**
 python3 loader.py data/final1.json.gz data/final2.json.gz
 ```
 
+Export the data in RDB format:
 ```bash
 docker run -it \
            --rm \
            --link cache:cache  \
            -v $PWD/data:/data  \
              redis redis-cli -h cache --rdb /data/routerank.rdb
+sending REPLCONF capa eof
+sending REPLCONF rdb-only 1
+SYNC sent to master, writing 247701866 bytes to '/data/routerank.rdb'
+Transfer finished with success.
+```
+
+## Usage (with docker-compose)
+
+This docker compose will bring up two containers, one with Redis and another
+with the loader script. The latter will insert the data in Redis.
+
+```bash
+$ docker-compose up
+Creating network "offer-cache_cache-network" with the default driver
+Creating offer-cache_cache_1 ... done
+Creating offer-cache_loader_1 ... done
+Attaching to offer-cache_cache_1, offer-cache_loader_1
+...
+```
+
+To export the data in RDB format issue the following command. You may need
+to change the network name `offer-cache_cache-network`, use the same name
+as it appears in the output of `docker-compose up`:
+
+```bash
+$ docker run -it \
+             --rm \
+             --network offer-cache_cache-network \
+             --link offer-cache_cache_1:cache \
+             -v "$PWD"/data:/data \
+               redis redis-cli -h cache --rdb /data/routerank.rdb
+sending REPLCONF capa eof
+sending REPLCONF rdb-only 1
+SYNC sent to master, writing 249875542 bytes to '/data/routerank.rdb'
+Transfer finished with success.
 ```
 
 ## References
