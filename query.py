@@ -5,8 +5,7 @@
 ##############################################################################
 
 import argparse
-from pprint import pprint
-import rejson as rj
+import redis
 
 
 if __name__ == '__main__':
@@ -17,14 +16,14 @@ if __name__ == '__main__':
                         help='Request ids to query.')
     args = parser.parse_args()
 
-    redis = rj.Client(host='localhost', port=6379, decode_responses=True)
+    redis = redis.Redis(host='localhost', port=6379)
 
     # getting a trip back
     for reqid in args.request_ids:
-        print("Request id: {}".format(reqid))
-        example = redis.jsonget('{}:offers'.format(reqid),
-                                rj.Path.rootPath()
-                                )
-        pprint(example)
+        offers = redis.lrange('{}:offers'.format(reqid), 0, -1)
+        print("* request id: {}".format(reqid))
+        for offer in offers:
+            print("    - offer id: {}".format(offer.decode('utf-8')))
+        print("---")
 
     exit(0)
