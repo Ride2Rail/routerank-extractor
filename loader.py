@@ -4,14 +4,15 @@
 #   https://github.com/RedisJSON/redisjson-py
 ##############################################################################
 
-import argparse
+import sys
 import json
+import argparse
 import itertools
 import redis
 from typing import IO, Union
 
 import compressed_stream as cs
-from cache_format import transform_trip
+from loader.cache_format import transform_trip
 
 NPRINT = 1000
 
@@ -26,20 +27,61 @@ def open_jsonobjects_file(path: Union[str, IO]):
     return (json.loads(line) for line in f)
 
 
+# Custom argparse type representing a bounded int
+# source:
+#   https://stackoverflow.com/a/61411431/2377454
+class IntRange:
+
+    def __init__(self, imin=None, imax=None):
+        self.imin = imin
+        self.imax = imax
+
+    def __call__(self, arg):
+        try:
+            value = int(arg)
+        except ValueError:
+            raise self.exception()
+        if (self.imin is not None and value < self.imin) or (self.imax is not None and value > self.imax):
+            raise self.exception()
+        return value
+
+    def exception(self):
+        if self.imin is not None and self.imax is not None:
+            return argparse.ArgumentTypeError(f"Must be an integer in the range [{self.imin}, {self.imax}]")
+        elif self.imin is not None:
+            return argparse.ArgumentTypeError(f"Must be an integer >= {self.imin}")
+        elif self.imax is not None:
+            return argparse.ArgumentTypeError(f"Must be an integer <= {self.imax}")
+        else:
+            return argparse.ArgumentTypeError("Must be an integer")
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('input_files',
                         metavar='<json_file>',
                         nargs='+',
                         help='JSON file to load')
+    parser.add_argument('-H', '--host',
+                        default='localhost',
+                        help='Redis hostname [default: localhost].')
+    parser.add_argument('-p', '--port',
+                        default=6379,
+                        type=IntRange(1, 65536),
+                        help='Redis port [default: 6379].')
+
     args = parser.parse_args()
 
+    print("Reading input...", file=sys.stderr, flush=True)
     json_files = []
     for json_file in args.input_files:
         json_files.append(open_jsonobjects_file(json_file))
     json_files = itertools.chain.from_iterable(json_files)
 
-    redis = redis.Redis(host='localhost', port=6379)
+    print("Connecting to Redis instance on {host}:{port}..."
+          .format(host=args.host, port=args.port),
+          file=sys.stderr, flush=True)
+    redis = redis.Redis(host=args.host, port=args.port)
 
     i = 1
     for json_file in json_files:
@@ -184,8 +226,10 @@ if __name__ == '__main__':
                                               )
 
                 if i % NPRINT == 0:
-                    print('insert #{} (request_id: {})'.format(i, request_id))
+                    print('insert #{} (request_id: {})'.format(i, request_id),
+                          file=sys.stderr, flush=True)
 
                 i = i + 1
 
+    print('All data loaded!', file=sys.stderr)
     exit(0)
