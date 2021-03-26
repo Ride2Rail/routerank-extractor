@@ -4,7 +4,7 @@
 
 # import modules
 from datetime import datetime, timedelta
-from geojson import MultiPoint
+from geojson import LineString
 
 
 def leg_type(mode):
@@ -74,9 +74,8 @@ def transform_trip(trip):
         example_new_format[request_id][offer_id].setdefault('bookable_total', )
         # get the price in the correct format (last two digits are decimal)
         price = int(float(alternative['totals']['price']) * 100)
-        example_new_format[request_id][offer_id].setdefault('complete_total', price)
-        # currency (always EUR in the case of routeRANK data)
-        example_new_format[request_id][offer_id].setdefault('currency', 'EUR')
+        price_dict = {'value': price, 'currency': 'EUR'}
+        example_new_format[request_id][offer_id].setdefault('complete_total', price_dict)
         # leg level information
         for segment in alternative['segments']:
             for leg in segment['legs']:
@@ -113,7 +112,7 @@ def transform_trip(trip):
                 coord_fin = get_coordinates(trip, leg['to'])
                 # example_new_format[request_id][offer_id][leg_id].setdefault('leg_stops',[coord_ini,coord_fin])
                 example_new_format[request_id][offer_id][leg_id].setdefault('leg_stops',
-                                                                            MultiPoint([coord_ini, coord_fin]))
+                                                                            LineString([coord_ini, coord_fin]))
 
                 # leg track
                 example_new_format[request_id][offer_id][leg_id].setdefault('leg_track', )
