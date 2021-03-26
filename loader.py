@@ -6,6 +6,7 @@
 
 import sys
 import json
+import geojson
 import argparse
 import itertools
 import redis
@@ -143,14 +144,9 @@ if __name__ == '__main__':
                                   )
 
                     # complete_total
-                    redis.set('{p}:complete_total'.format(p=prefix),
-                              mreq[request_id][offer_id]['complete_total']
-                              )
-                    # currency
-                    redis.set('{p}:currency'.format(p=prefix),
-                              mreq[request_id][offer_id]['currency']
-                              )
-
+                    redis.hmset('{p}:complete_total'.format(p=prefix),
+                                mreq[request_id][offer_id]['complete_total']
+                                )
                     # leg-level information
                     for segment in alternative['segments']:
                         for leg in segment['legs']:
@@ -182,7 +178,7 @@ if __name__ == '__main__':
                                       )
                             # leg_stops
                             redis.set('{pl}:leg_stops'.format(pl=prefix_leg),
-                                      json.dumps(mreq[request_id][offer_id][leg_id]['leg_stops'])
+                                      geojson.dumps(mreq[request_id][offer_id][leg_id]['leg_stops'])
                                       )
                             # leg_track
                             if mreq[request_id][offer_id][leg_id]['leg_track']:
