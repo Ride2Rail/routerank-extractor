@@ -92,7 +92,7 @@ if __name__ == '__main__':
                 mreq = transform_trip(trip)
 
                 # request-level information
-                request_id = trip['legId']
+                request_id = '{tripId}-{legId}'.format(tripId=trip['tripId'], legId=trip['legId'])
 
                 # insert a list
                 #   https://stackoverflow.com/a/39930371/2377454

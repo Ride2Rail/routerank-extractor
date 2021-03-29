@@ -31,7 +31,7 @@ def get_time_format(dur):
 
 
 def transform_trip(trip):
-    request_id = str(trip['legId'])
+    request_id = '{tripId}-{legId}'.format(tripId=trip['tripId'], legId=trip['legId'])
     example_new_format = dict()
     example_new_format.setdefault(request_id, {})
     fmt = '%H:%M'
