@@ -23,6 +23,7 @@ python3 loader.py data/final1.json.gz data/final2.json.gz
 ```
 
 Export the data in RDB format:
+
 ```bash
 docker run -it \
            --rm \
@@ -56,8 +57,8 @@ as it appears in the output of `docker-compose up`:
 ```bash
 $ docker run -it \
              --rm \
-             --network offer-cache_cache-network \
-             --link offer-cache_cache_1:cache \
+             --network cache-network \
+             --link cache:cache \
              -v "$PWD"/data:/data \
                redis redis-cli -h cache --rdb /data/routerank.rdb
 sending REPLCONF capa eof

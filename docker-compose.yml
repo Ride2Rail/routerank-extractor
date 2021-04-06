@@ -8,6 +8,8 @@ services:
     restart: always
     networks:
       - cache-network
+    ports:
+      - "6379:6379"
 
   loader:
     build:
@@ -23,3 +25,4 @@ services:
 
 networks:
   cache-network:
+    name: cache-network
