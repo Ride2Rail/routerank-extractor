@@ -1,3 +1,4 @@
 -e git+https://github.com/CristianCantoro/compressed_stream.git@master#egg=compressed_stream
+-e git+https://github.com/Ride2Rail/r2r-offer-utils.git@main#egg=r2r-offer-utils
 redis==3.5.3
 geojson==2.5.0

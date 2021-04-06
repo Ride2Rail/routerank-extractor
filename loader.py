@@ -13,6 +13,8 @@ import redis
 from typing import IO, Union
 
 import compressed_stream as cs
+from r2r_offer_utils.cli_utils import IntRange
+
 from loader.cache_format import transform_trip
 
 NPRINT = 1000
@@ -26,35 +28,6 @@ def open_jsonobjects_file(path: Union[str, IO]):
     )
 
     return (json.loads(line) for line in f)
-
-
-# Custom argparse type representing a bounded int
-# source:
-#   https://stackoverflow.com/a/61411431/2377454
-class IntRange:
-
-    def __init__(self, imin=None, imax=None):
-        self.imin = imin
-        self.imax = imax
-
-    def __call__(self, arg):
-        try:
-            value = int(arg)
-        except ValueError:
-            raise self.exception()
-        if (self.imin is not None and value < self.imin) or (self.imax is not None and value > self.imax):
-            raise self.exception()
-        return value
-
-    def exception(self):
-        if self.imin is not None and self.imax is not None:
-            return argparse.ArgumentTypeError(f"Must be an integer in the range [{self.imin}, {self.imax}]")
-        elif self.imin is not None:
-            return argparse.ArgumentTypeError(f"Must be an integer >= {self.imin}")
-        elif self.imax is not None:
-            return argparse.ArgumentTypeError(f"Must be an integer <= {self.imax}")
-        else:
-            return argparse.ArgumentTypeError("Must be an integer")
 
 
 if __name__ == '__main__':
