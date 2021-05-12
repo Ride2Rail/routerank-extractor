@@ -61,9 +61,9 @@ def transform_trip(trip):
         tdelta = datetime.strptime(end_time, fmt) - datetime.strptime(start_time, fmt)
         example_new_format[request_id][offer_id].setdefault('duration', get_time_format(tdelta.total_seconds()))
         # num_legs = 0
+        leg_ids = []
         for segment in alternative['segments']:
             # num_legs += len(segment['legs'])
-            leg_ids = []
             for leg in segment['legs']:
                 leg_ids.append(leg['id'])
         example_new_format[request_id][offer_id].setdefault('num_interchanges', len(leg_ids) - 1)
