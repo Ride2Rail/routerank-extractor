@@ -117,9 +117,15 @@ if __name__ == '__main__':
                                   )
 
                     # complete_total
-                    redis.hmset('{p}:complete_total'.format(p=prefix),
-                                mreq[request_id][offer_id]['complete_total']
-                                )
+                    # Switch from hmset() to hset() in Redis
+                    #   https://stackoverflow.com/a/61826471/2377454
+                    ct_dict = mreq[request_id][offer_id]['complete_total']
+                    for k, v in ct_dict.items():
+                        field = ('{p}:complete_total:{k}'
+                                 .format(p=prefix, k=k))
+                        redis.hset(field, k, v)
+                    del ct_dict, field
+
                     # leg-level information
                     for segment in alternative['segments']:
                         for leg in segment['legs']:
@@ -195,7 +201,7 @@ if __name__ == '__main__':
                                               )
 
                 if i % NPRINT == 0:
-                    print('insert #{} (request_id: {})'.format(i, request_id),
+                    print('insert no. {} (request_id: {})'.format(i, request_id),
                           file=sys.stderr, flush=True)
 
                 i = i + 1
