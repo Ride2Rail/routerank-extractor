@@ -1,6 +1,6 @@
 # Loading initial data into a Redis Docker container
 # https://stackoverflow.com/a/33006167/2377454
-version: '3.4'
+version: '3.9'
 
 services:
   cache:
@@ -22,6 +22,8 @@ services:
     networks:
       - cache-network
     command: ["python3", "loader.py", "-H", "cache", "final1.json.gz", "final2.json.gz"]
+    profiles:
+      - loading
 
 networks:
   cache-network:
