@@ -19,6 +19,22 @@ def leg_type(mode):
         return 'ridesharing'
 
 
+def mapping_transport_mode(t_mode):
+    transports_to_map = {'bike': 'cycle',
+                         'boat': 'water',
+                         'car': 'self-drive-car',
+                         'carsharing': 'others-drive-car',
+                         'walking': 'walk',
+                         'train': 'rail',
+                         'subway': 'metro',
+                         'bikesharing': 'cycle',
+                         'genericpublictrans': 'rail'}
+    if t_mode in transports_to_map:
+        return transports_to_map[t_mode]
+    else:
+        return t_mode
+
+
 def get_coordinates(offer, place):
     lat, lon = offer['places'][place]['latitude'], offer['places'][place]['longitude']
     return float(lat), float(lon)
@@ -105,7 +121,8 @@ def transform_trip(trip):
                 example_new_format[request_id][offer_id][leg_id].setdefault('duration',
                                                                             get_time_format(tdelta.total_seconds()))
                 # transportation mode
-                example_new_format[request_id][offer_id][leg_id].setdefault('transportation_mode', leg['transport'])
+                example_new_format[request_id][offer_id][leg_id].setdefault('transportation_mode',
+                                                                            mapping_transport_mode(leg['transport']))
 
                 # leg stops
                 coord_ini = get_coordinates(trip, leg['from'])
