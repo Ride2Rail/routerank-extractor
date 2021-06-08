@@ -1,7 +1,8 @@
 # ignore data folder, but keep the folder itself
 # https://stackoverflow.com/a/4250082/2377454
-data/*
-!data/.gitkeep
+data/final1.json.gz
+data/final2.json.gz
+data/routerank.rdb
 
 ##############################################################################
 # Python-based gitignore
