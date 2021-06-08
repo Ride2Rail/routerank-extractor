@@ -57,9 +57,18 @@ if __name__ == '__main__':
           file=sys.stderr, flush=True)
     redis = redis.Redis(host=args.host, port=args.port)
 
-    i = 1
+    trip_count = 1
+    insert_count = 1
     for json_file in json_files:
         for trip in json_file:
+
+            if trip_count % NPRINT == 0:
+                print('{} trips read (trip_id: {})'
+                      .format(trip_count, trip['tripId']),
+                      file=sys.stderr, flush=True)
+
+            trip_count = trip_count + 1
+
             if len(trip['alternatives']) > 0:
                 # get mobility request data
                 mreq = transform_trip(trip)
@@ -136,75 +145,78 @@ if __name__ == '__main__':
                                                   offer_id=offer_id,
                                                   leg_id=leg_id)
                                           )
+
+                            leg = mreq[request_id][offer_id][leg_id]
                             redis.set('{pl}:leg_type'.format(pl=prefix_leg),
-                                      mreq[request_id][offer_id][leg_id]['leg_type']
+                                      leg['leg_type']
                                       )
                             # start_time
                             redis.set('{pl}:start_time'.format(pl=prefix_leg),
-                                      mreq[request_id][offer_id][leg_id]['start_time']
+                                      leg['start_time']
                                       )
                             # end_time
                             redis.set('{pl}:end_time'.format(pl=prefix_leg),
-                                      mreq[request_id][offer_id][leg_id]['end_time']
+                                      leg['end_time']
                                       )
                             # duration
                             redis.set('{pl}:duration'.format(pl=prefix_leg),
-                                      mreq[request_id][offer_id][leg_id]['duration']
+                                      leg['duration']
                                       )
                             # transportation_mode
                             redis.set('{pl}:transportation_mode'.format(pl=prefix_leg),
-                                      mreq[request_id][offer_id][leg_id]['transportation_mode']
+                                      leg['transportation_mode']
                                       )
                             # leg_stops
                             redis.set('{pl}:leg_stops'.format(pl=prefix_leg),
-                                      geojson.dumps(mreq[request_id][offer_id][leg_id]['leg_stops'])
+                                      geojson.dumps(leg['leg_stops'])
                                       )
                             # leg_track
-                            if mreq[request_id][offer_id][leg_id]['leg_track']:
+                            if leg['leg_track']:
                                 redis.set('{pl}:leg_track'.format(pl=prefix_leg),
-                                          mreq[request_id][offer_id][leg_id]['leg_track']
+                                          leg['leg_track']
                                           )
 
                             # travel_expert
-                            if mreq[request_id][offer_id][leg_id]['travel_expert']:
+                            if leg['travel_expert']:
                                 redis.set('{pl}:travel_expert'.format(pl=prefix_leg),
-                                          mreq[request_id][offer_id][leg_id]['travel_expert']
+                                          leg['travel_expert']
                                           )
 
-                            if mreq[request_id][offer_id][leg_id]['leg_type'] == 'timed':
+                            if leg['leg_type'] == 'timed':
                                 # line
-                                if mreq[request_id][offer_id][leg_id]['line']:
+                                if leg['line']:
                                     redis.set('{pl}:line'.format(pl=prefix_leg),
-                                              mreq[request_id][offer_id][leg_id]['line']
+                                              leg['line']
                                               )
                                 # journey
-                                if mreq[request_id][offer_id][leg_id]['journey']:
+                                if leg['journey']:
                                     redis.set('{pl}:journey'.format(pl=prefix_leg),
-                                              mreq[request_id][offer_id][leg_id]['journey']
+                                              leg['journey']
                                               )
 
-                            elif mreq[request_id][offer_id][leg_id]['leg_type'] == 'ridesharing':
+                            elif leg['leg_type'] == 'ridesharing':
                                 # driver
-                                if mreq[request_id][offer_id][leg_id]['driver']:
+                                if leg['driver']:
                                     redis.set('{pl}:driver'.format(pl=prefix_leg),
-                                              mreq[request_id][offer_id][leg_id]['driver']
+                                              leg['driver']
                                               )
                                 # passenger
-                                if mreq[request_id][offer_id][leg_id]['passenger']:
+                                if leg['passenger']:
                                     redis.set('{pl}:passenger'.format(pl=prefix_leg),
-                                              mreq[request_id][offer_id][leg_id]['passenger']
+                                              leg['passenger']
                                               )
                                 # vehicle
-                                if mreq[request_id][offer_id][leg_id]['vehicle']:
+                                if leg['vehicle']:
                                     redis.set('{pl}:vehicle'.format(pl=prefix_leg),
-                                              mreq[request_id][offer_id][leg_id]['vehicle']
+                                              leg['vehicle']
                                               )
 
-                if i % NPRINT == 0:
-                    print('insert no. {} (request_id: {})'.format(i, request_id),
+                if insert_count % NPRINT == 0:
+                    print('--> insert no. {} (request_id: {})'
+                          .format(insert_count, request_id),
                           file=sys.stderr, flush=True)
 
-                i = i + 1
+                insert_count = insert_count + 1
 
     print('All data loaded!', file=sys.stderr)
     exit(0)
