@@ -34,11 +34,15 @@ if __name__ == '__main__':
     redis = redis.Redis(host=args.redis_host, port=args.redis_port)
 
     # getting a trip back
+    # for reqid in args.request_ids:
+    #     offers = redis.lrange(f'{reqid}:offers', 0, -1)
+    #     print(f"* request id: {reqid}")
+    #     for offer in offers:
+    #         print("    - offer id: {}".format(offer.decode('utf-8')))
+    #     print("---")
     for reqid in args.request_ids:
-        offers = redis.lrange(f'{reqid}:offers', 0, -1)
-        print(f"* request id: {reqid}")
-        for offer in offers:
-            print("    - offer id: {}".format(offer.decode('utf-8')))
+        user_id = redis.get(f'{reqid}:user_id')
+        print(f"(request id, user_id): ({reqid}, {user_id}")
         print("---")
 
     exit(0)
